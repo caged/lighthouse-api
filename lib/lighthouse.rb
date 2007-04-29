@@ -1,6 +1,5 @@
 $LOAD_PATH << File.join(File.dirname(__FILE__), '../vendor/activesupport/lib')
 $LOAD_PATH << File.join(File.dirname(__FILE__), '../vendor/activeresource/lib')
-$LOAD_PATH << File.join(File.dirname(__FILE__), '../vendor/actionmailer/lib')
 require 'active_support'
 require 'active_resource'
 
@@ -16,15 +15,23 @@ module Lighthouse
         def account=(name)
           Lighthouse::Base.account = name
         end
+
+        def token
+          Lighthouse::Base.token
+        end
+
+        def token=(value)
+          Lighthouse::Base.token = value
+        end
+        
+        attr_accessor :site_format
       end
+      base.site_format = 'http://%s.lighthouseapp.com'
       super
     end
     
-    class_inheritable_accessor :site_format
-    self.site_format = 'http://%s.lighthouseapp.com'
-    
     class << self
-      attr_accessor :resources, :account
+      attr_accessor :resources, :account, :token
 
       def account=(name)
         resources.each do |klass|
@@ -32,18 +39,28 @@ module Lighthouse
         end
         @account = name
       end
+
+      def token=(value)
+        resources.each do |klass|
+          klass.custom_headers['X-LighthouseToken'] = value
+        end
+        @token = value
+      end
     end
     
     def account
       self.class.account
     end
-
-    def account=(name)
-      self.class.account = name
+    
+    def token
+      self.class.token
     end
   end
-end
+  
+  class Project < Lighthouse::Base
+  end
 
-class Ticket < Lighthouse::Base
-  site_format << '/projects/:project_id'
+  class Ticket < Lighthouse::Base
+    site_format << '/projects/:project_id'
+  end
 end
