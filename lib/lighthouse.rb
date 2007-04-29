@@ -20,7 +20,7 @@ module Lighthouse
 
     def token=(value)
       resources.each do |klass|
-        klass.custom_headers['X-LighthouseToken'] = value
+        klass.headers['X-LighthouseToken'] = value
       end
       @token = value
     end
