@@ -1,0 +1,8 @@
+Check out lib/lighthouse.rb, there are some docs to help you get started.
+
+This requires ActiveResource.  Since it's not officially released in gem form yet, 
+you'll have to download them manually.  
+
+cd vendor
+svn co http://svn.rubyonrails.org/rails/activesupport
+svn co http://svn.rubyonrails.org/rails/activeresource
