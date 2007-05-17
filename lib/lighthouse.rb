@@ -95,6 +95,18 @@ module Lighthouse
     def tickets(options = {})
       Ticket.find(:all, :params => options.update(:project_id => id))
     end
+  
+    def messages(options = {})
+      Message.find(:all, :params => options.update(:project_id => id))
+    end
+  
+    def milestones(options = {})
+      Milestone.find(:all, :params => options.update(:project_id => id))
+    end
+  
+    def bins(options = {})
+      Bin.find(:all, :params => options.update(:project_id => id))
+    end
   end
 
   # Find tickets
@@ -120,6 +132,18 @@ module Lighthouse
   #  ticket.save
   #
   class Ticket < Lighthouse::Base
+    site_format << '/projects/:project_id'
+  end
+  
+  class Message < Lighthouse::Base
+    site_format << '/projects/:project_id'
+  end
+  
+  class Milestone < Lighthouse::Base
+    site_format << '/projects/:project_id'
+  end
+  
+  class Bin < Lighthouse::Base
     site_format << '/projects/:project_id'
   end
 end
