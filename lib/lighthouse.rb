@@ -26,6 +26,7 @@ require 'active_resource'
 #
 module Lighthouse
   class << self
+    attr_accessor :email, :password
     attr_reader :account, :token
 
     # Sets the account name, and updates all the resources with the new domain.
@@ -37,11 +38,9 @@ module Lighthouse
     end
 
     # Sets up basic authentication credentials for all the resources.
-    def authenticate(user, password)
-      resources.each do |klass|
-        klass.site.user     = user
-        klass.site.password = password
-      end
+    def authenticate(email, password)
+      @email    = email
+      @password = password
     end
 
     # Sets the API token for all the resources.
@@ -145,5 +144,14 @@ module Lighthouse
   
   class Bin < Lighthouse::Base
     site_format << '/projects/:project_id'
+  end
+end
+
+module ActiveResource
+  class Connection
+    private
+      def authorization_header
+        (Lighthouse.email || Lighthouse.password ? { 'Authorization' => 'Basic ' + ["#{Lighthouse.email}:#{Lighthouse.password}"].pack('m').delete("\r\n") } : {})
+      end
   end
 end
