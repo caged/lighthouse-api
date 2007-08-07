@@ -147,12 +147,14 @@ module Lighthouse
   #  ticket = Ticket.new(:project_id => 44)
   #  ticket.title = 'asdf'
   #  ...
+  #  ticket.tags << 'ruby' << 'rails' << '@high'
   #  ticket.save
   #
   # Updating a Ticket
   #
   #  ticket = Ticket.find(20, :params => { :project_id => 44 })
   #  ticket.state = 'resolved'
+  #  ticket.tags.delete '@high'
   #  ticket.save
   #
   class Ticket < Base
