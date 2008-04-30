@@ -1,7 +1,6 @@
-$LOAD_PATH << File.join(File.dirname(__FILE__), '../vendor/activesupport/lib')
-$LOAD_PATH << File.join(File.dirname(__FILE__), '../vendor/activeresource/lib')
-require 'active_support'
-require 'active_resource'
+require 'rubygems'
+require 'activesupport'
+require 'activeresource'
 
 # Ruby lib for working with the Lighthouse API's XML interface.  
 # The first thing you need to set is the account name.  This is the same
