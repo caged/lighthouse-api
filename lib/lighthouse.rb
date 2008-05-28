@@ -111,6 +111,10 @@ module Lighthouse
     def bins(options = {})
       Bin.find(:all, :params => options.update(:project_id => id))
     end
+    
+    def changesets(options = {})
+      Changeset.find(:all, :params => options.update(:project_id => id))
+    end
   end
 
   class User < Base
@@ -221,6 +225,12 @@ module Lighthouse
   class Bin < Base
     site_format << '/projects/:project_id'
   end
+  
+  class Changeset < Base
+    site_format << '/projects/:project_id'
+  end
+  
+  class Change < Array; end
 end
 
 module ActiveResource
