@@ -74,25 +74,25 @@ module Lighthouse
   
   # Find projects
   #
-  #   Project.find(:all) # find all projects for the current account.
-  #   Project.find(44)   # find individual project by ID
+  #   Lighthouse::Project.find(:all) # find all projects for the current account.
+  #   Lighthouse::Project.find(44)   # find individual project by ID
   #
   # Creating a Project
   #
-  #   project = Project.new(:name => 'Ninja Whammy Jammy')
+  #   project = Lighthouse::Project.new(:name => 'Ninja Whammy Jammy')
   #   project.save
   #   # => true
   #
   # Updating a Project
   #
-  #   project = Project.find(44)
+  #   project = Lighthouse::Project.find(44)
   #   project.name = "Lighthouse Issues"
   #   project.public = false
   #   project.save
   #
   # Finding tickets
   # 
-  #   project = Project.find(44)
+  #   project = Lighthouse::Project.find(44)
   #   project.tickets
   #
   class Project < Base
@@ -134,16 +134,16 @@ module Lighthouse
 
   # Find tickets
   #
-  #  Ticket.find(:all, :params => { :project_id => 44 })
-  #  Ticket.find(:all, :params => { :project_id => 44, :q => "state:closed tagged:committed" })
+  #  Lighthouse::Ticket.find(:all, :params => { :project_id => 44 })
+  #  Lighthouse::Ticket.find(:all, :params => { :project_id => 44, :q => "state:closed tagged:committed" })
   #
-  #  project = Project.find(44)
+  #  project = Lighthouse::Project.find(44)
   #  project.tickets
   #  project.tickets(:q => "state:closed tagged:committed")
   #
   # Creating a Ticket
   #
-  #  ticket = Ticket.new(:project_id => 44)
+  #  ticket = Lighthouse::Ticket.new(:project_id => 44)
   #  ticket.title = 'asdf'
   #  ...
   #  ticket.tags << 'ruby' << 'rails' << '@high'
@@ -151,7 +151,7 @@ module Lighthouse
   #
   # Updating a Ticket
   #
-  #  ticket = Ticket.find(20, :params => { :project_id => 44 })
+  #  ticket = Lighthouse::Ticket.find(20, :params => { :project_id => 44 })
   #  ticket.state = 'resolved'
   #  ticket.tags.delete '@high'
   #  ticket.save
