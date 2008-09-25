@@ -32,7 +32,7 @@ module Lighthouse
     # Sets the account name, and updates all the resources with the new domain.
     def account=(name)
       resources.each do |klass|
-        klass.site = klass.site_format % (host_format % [protocol, domain_format % name, port])
+        klass.site = klass.site_format % (host_format % [protocol, domain_format % name, ":#{port}"])
       end
       @account = name
     end
@@ -146,7 +146,7 @@ module Lighthouse
   class Membership < Base
     site_format << '/users/:user_id'
     def save
-      raise Error, "Cannot modify Memberships from the API"
+      raise Error, "Cannot modify memberships from the API"
     end
   end
   
