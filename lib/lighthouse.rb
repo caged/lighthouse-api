@@ -83,6 +83,26 @@ module Lighthouse
   #   project.save
   #   # => true
   #
+  # Creating an OSS project
+  # 
+  #   project = Lighthouse::Project.new(:name => 'OSS Project')
+  #   project.access = 'oss'
+  #   project.license = 'mit'
+  #   project.save
+  # 
+  # OSS License Mappings
+  # 
+  #   'mit' => "MIT License",
+  #   'apache-2-0' => "Apache License 2.0",
+  #   'artistic-gpl-2' => "Artistic License/GPLv2",
+  #   'gpl-2' => "GNU General Public License v2",
+  #   'gpl-3' => "GNU General Public License v3",
+  #   'lgpl' => "GNU Lesser General Public License"
+  #   'mozilla-1-1' => "Mozilla Public License 1.1"
+  #   'new-bsd' => "New BSD License",
+  #   'afl-3' => "Academic Free License v. 3.0"
+  
+  #
   # Updating a Project
   #
   #   project = Lighthouse::Project.find(44)
