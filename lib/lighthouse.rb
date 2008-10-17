@@ -4,6 +4,7 @@ begin
   require 'uri'
   require 'addressable/uri'
   puts "Replacing URI with Addressable::URI"
+  Addressable::URI::HTTPS = URI::HTTPS
   URI = Addressable::URI
 rescue LoadError
   puts "Install the Addressable gem to support accounts with subdomains."
