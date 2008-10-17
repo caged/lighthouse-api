@@ -1,4 +1,15 @@
 require 'rubygems'
+
+begin
+  require 'addressable/uri'
+  puts "Replacing URI with Addressable::URI"
+  URI = Addressable::URI
+rescue LoadError
+  puts "Install the Addressable gem to support accounts with subdomains."
+  puts "# sudo gem install addressable"
+  puts
+end
+
 require 'activesupport'
 require 'activeresource'
 
