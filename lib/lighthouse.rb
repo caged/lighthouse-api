@@ -1,6 +1,7 @@
 require 'rubygems'
 
 begin
+  require 'uri'
   require 'addressable/uri'
   puts "Replacing URI with Addressable::URI"
   URI = Addressable::URI
