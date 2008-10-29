@@ -207,6 +207,22 @@ module Lighthouse
       @tags ||= tag.blank? ? [] : parse_with_spaces(tag)
     end
 
+    def body
+      attributes['body'] ||= ''
+    end
+
+    def body=(value)
+      attributes['body'] = value
+    end
+
+    def body_html
+      attributes['body_html'] ||= ''
+    end
+
+    def body_html=(value)
+      attributes['body_html'] = value
+    end
+
     def save_with_tags
       self.tag = @tags.collect do |tag|
         tag.include?(' ') ? tag.inspect : tag
