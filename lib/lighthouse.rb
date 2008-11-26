@@ -272,7 +272,7 @@ module Lighthouse
     site_format << '/projects/:project_id'
 
     def tickets(options = {})
-      Ticket.find(:all, :params => options.merge(prefix_options).update(:q => "milestone:'#{title}'"))
+      Ticket.find(:all, :params => options.merge(prefix_options).update(:q => %{milestone:"#{title}"}))
     end
   end
   
@@ -298,7 +298,7 @@ class String
   end
 
   def tickets(options = {})
-    Ticket.find(:all, :params => options.merge(prefix_options).update(:q => "tagged:'#{self}'"))
+    Ticket.find(:all, :params => options.merge(prefix_options).update(:q => %{tagged:"#{self}"}))
   end
 end
 
