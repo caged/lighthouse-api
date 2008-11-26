@@ -254,6 +254,7 @@ module Lighthouse
               t.gsub! /(^')|('$)/, ''
               t.gsub! /[^a-z0-9 \-_@\!']/, ''
               t.strip!
+              t.prefix_options = prefix_options
               t
             end
           end
@@ -288,6 +289,17 @@ module Lighthouse
   end
   
   class Change < Array; end
+end
+
+class String
+  attr_writer :prefix_options
+  def prefix_options
+    @prefix_options || {}
+  end
+
+  def tickets(options = {})
+    Ticket.find(:all, :params => options.merge(prefix_options).update(:q => "tagged:'#{self}'"))
+  end
 end
 
 module ActiveResource
