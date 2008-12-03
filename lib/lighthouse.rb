@@ -261,6 +261,7 @@ module Lighthouse
         returning tags do |tag|
           tag.collect! do |t|
             unless tag.blank?
+              t = Tag.new(t)
               t.downcase!
               t.gsub! /(^')|('$)/, ''
               t.gsub! /[^a-z0-9 \-_@\!']/, ''
@@ -300,16 +301,16 @@ module Lighthouse
   end
   
   class Change < Array; end
-end
 
-class String
-  attr_writer :prefix_options
-  def prefix_options
-    @prefix_options || {}
-  end
+  class Tag < String
+    attr_writer :prefix_options
+    def prefix_options
+      @prefix_options || {}
+    end
 
-  def tickets(options = {})
-    Ticket.find(:all, :params => options.merge(prefix_options).update(:q => %{tagged:"#{self}"}))
+    def tickets(options = {})
+      Ticket.find(:all, :params => options.merge(prefix_options).update(:q => %{tagged:"#{self}"}))
+    end
   end
 end
 
