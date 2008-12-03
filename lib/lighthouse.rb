@@ -3,9 +3,20 @@ require 'rubygems'
 begin
   require 'uri'
   require 'addressable/uri'
-  puts "Replacing URI with Addressable::URI"
-  Addressable::URI::HTTPS = URI::HTTPS
-  URI = Addressable::URI
+
+  module URI
+    def decode(*args)
+      Addressable::URI.decode(*args)
+    end
+
+    def escape(*args)
+      Addressable::URI.escape(*args)
+    end
+
+    def parse(*args)
+      Addressable::URI.parse(*args)
+    end
+  end
 rescue LoadError
   puts "Install the Addressable gem to support accounts with subdomains."
   puts "# sudo gem install addressable"
