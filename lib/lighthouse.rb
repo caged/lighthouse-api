@@ -165,7 +165,7 @@ module Lighthouse
     end
 
     def tags(options = {})
-      Tag.find(:all, :params => options.update(:project_id => id))
+      TagResource.find(:all, :params => options.update(:project_id => id))
     end
   end
 
@@ -282,10 +282,12 @@ module Lighthouse
         returning tags do |tag|
           tag.collect! do |t|
             unless tag.blank?
+              t = Tag.new(t)
               t.downcase!
               t.gsub! /(^')|('$)/, ''
               t.gsub! /[^a-z0-9 \-_@\!']/, ''
               t.strip!
+              t.prefix_options = prefix_options
               t
             end
           end
@@ -301,10 +303,18 @@ module Lighthouse
   
   class Milestone < Base
     site_format << '/projects/:project_id'
+
+    def tickets(options = {})
+      Ticket.find(:all, :params => options.merge(prefix_options).update(:q => %{milestone:"#{title}"}))
+    end
   end
   
   class Bin < Base
     site_format << '/projects/:project_id'
+
+    def tickets(options = {})
+      Ticket.find(:all, :params => options.merge(prefix_options).update(:q => query))
+    end
   end
   
   class Changeset < Base
@@ -313,11 +323,35 @@ module Lighthouse
   
   class Change < Array; end
 
-  class Tag < Base
+  class TagResource < Base
+    self.element_name = 'tag'
     site_format << '/projects/:project_id'
 
     def name
-      tag
+      @name ||= Tag.new(attributes['name'], prefix_options[:project_id])
+    end
+
+    def tickets(options = {})
+      name.tickets(options)
+    end
+  end
+  
+  class Tag < String
+    attr_writer :prefix_options
+    attr_accessor :project_id
+
+    def initialize(s, project_id)
+      @project_id = project_id
+      super(s)
+    end
+
+    def prefix_options
+      @prefix_options || {}
+    end
+
+    def tickets(options = {})
+      options[:project_id] ||= @project_id
+      Ticket.find(:all, :params => options.merge(prefix_options).update(:q => %{tagged:"#{self}"}))
     end
   end
 end
