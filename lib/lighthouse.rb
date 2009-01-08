@@ -159,16 +159,37 @@ module Lighthouse
     def changesets(options = {})
       Changeset.find(:all, :params => options.update(:project_id => id))
     end
+
+    def memberships(options = {})
+      ProjectMembership.find(:all, :params => options.update(:project_id => id))
+    end
+
+    def tags(options = {})
+      Tag.find(:all, :params => options.update(:project_id => id))
+    end
   end
 
   class User < Base
-    def memberships
+    def memberships(options = {})
       Membership.find(:all, :params => {:user_id => id})
     end
   end
   
   class Membership < Base
     site_format << '/users/:user_id'
+    def save
+      raise Error, "Cannot modify memberships from the API"
+    end
+  end
+  
+  class ProjectMembership < Base
+    self.element_name = 'membership'
+    site_format << '/projects/:project_id'
+
+    def url
+      respond_to?(:account) ? account : project
+    end
+
     def save
       raise Error, "Cannot modify memberships from the API"
     end
@@ -291,6 +312,14 @@ module Lighthouse
   end
   
   class Change < Array; end
+
+  class Tag < Base
+    site_format << '/projects/:project_id'
+
+    def name
+      tag
+    end
+  end
 end
 
 module ActiveResource
