@@ -282,7 +282,7 @@ module Lighthouse
         returning tags do |tag|
           tag.collect! do |t|
             unless tag.blank?
-              t = Tag.new(t)
+              t = Tag.new(t,prefix_options[:project_id])
               t.downcase!
               t.gsub! /(^')|('$)/, ''
               t.gsub! /[^a-z0-9 \-_@\!']/, ''
