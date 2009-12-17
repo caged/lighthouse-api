@@ -1,12 +1,12 @@
 Gem::Specification.new do |s|
   s.name = %q{lighthouse-api}
-  s.version = "1.0.0"
+  s.version = "1.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rick Olsen", "Justin Palmer"]
   s.date = %q{2008-09-19}
   s.description = %q{RubyGem wrapper for ActiveResource API to http://lighthouseapp.com}
-  s.email = ["FIXME email"]
+  s.email = ["justin@entp.com"]
   s.extra_rdoc_files = ["LICENSE"]
   s.files = ["LICENSE", "README.markdown", "lib/lighthouse-api.rb", "lib/lighthouse.rb", "lib/lighthouse/console.rb"]
   s.has_rdoc = true
