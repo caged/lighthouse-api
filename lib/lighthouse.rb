@@ -23,8 +23,8 @@ rescue LoadError => e
   puts e.message
 end
 
-require 'activesupport'
-require 'activeresource'
+require 'active_support'
+require 'active_resource'
 
 # Ruby lib for working with the Lighthouse API's XML interface.  
 # The first thing you need to set is the account name.  This is the same
