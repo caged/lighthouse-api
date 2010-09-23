@@ -9,6 +9,7 @@ module Lighthouse
       super
       Lighthouse.update_site(base)
       Lighthouse.update_token_header(base)
+      Lighthouse.update_auth(base)
     end
   end
 end

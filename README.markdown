@@ -17,7 +17,11 @@ The Lighthouse library comes with a convenient console for testing and quick com
 
 From /lib:
 
+    # For ruby 1.9
+    # irb -I. -r lighthouse/console.rb
+    
     irb -r lighthouse/console
+    
     Lighthouse.account = "activereload"
 
     #### You can use `authenticate` OR `token`

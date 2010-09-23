@@ -49,34 +49,33 @@ module Lighthouse
   class Change < Array; end
   
   class << self
-    attr_accessor :password, :host_format, :domain_format, :protocol, :port
-    attr_reader :account, :token, :email
+    attr_accessor :email, :password, :host_format, :domain_format, :protocol, :port
+    attr_reader :account, :token
 
     # Sets the account name, and updates all the resources with the new domain.
     def account=(name)
+      @account = name
       resources.each do |klass|
         update_site(klass)
       end
-      @account = name
     end
 
     # Sets up basic authentication credentials for all the resources.
     def authenticate(email, password)
       self.email    = email
       self.password = password
+      
+      resources.each do |klass|
+        update_auth(klass)
+      end
     end
 
     # Sets the API token for all the resources.
     def token=(value)
-      resources.each do |klass|
-        klass
-      end
       @token = value
-    end
-    
-    # Sets the account email and user to avoid monkeypatching ActiveResource
-    def email=(value)
-      @email = @user = value
+      resources.each do |klass|
+        update_token_header(klass)
+      end
     end
 
     def resources
@@ -88,7 +87,13 @@ module Lighthouse
     end
     
     def update_token_header(resource)
-      resource.headers['X-LighthouseToken'] = token
+      resource.headers['X-LighthouseToken'] = token if token
+    end
+    
+    def update_auth(resource)
+      return unless email && password
+      resource.user     = email
+      resource.password = password
     end
   end
   
