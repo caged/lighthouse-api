@@ -2,6 +2,7 @@ $: << File.dirname(__FILE__) unless $:.include?(File.dirname(__FILE__))
 
 require 'rubygems'
 require 'lighthouse/core_ext/uri'
+require 'active_support'
 require 'active_resource'
 
 # Ruby lib for working with the Lighthouse API's XML interface.  
@@ -47,11 +48,6 @@ module Lighthouse
   
   class Change < Array; end
   
-  self.host_format   = '%s://%s%s'
-  self.domain_format = '%s.lighthouseapp.com'
-  self.protocol      = 'http'
-  self.port          = ''
-  
   class << self
     attr_accessor :password, :host_format, :domain_format, :protocol, :port
     attr_reader :account, :token, :email
@@ -59,7 +55,7 @@ module Lighthouse
     # Sets the account name, and updates all the resources with the new domain.
     def account=(name)
       resources.each do |klass|
-        klass.site = klass.site_format % (host_format % [protocol, domain_format % name, ":#{port}"])
+        update_site(klass)
       end
       @account = name
     end
@@ -73,7 +69,7 @@ module Lighthouse
     # Sets the API token for all the resources.
     def token=(value)
       resources.each do |klass|
-        klass.headers['X-LighthouseToken'] = value
+        klass
       end
       @token = value
     end
@@ -86,5 +82,18 @@ module Lighthouse
     def resources
       @resources ||= []
     end
+    
+    def update_site(resource)
+      resource.site = resource.site_format % (host_format % [protocol, domain_format % account, ":#{port}"])
+    end
+    
+    def update_token_header(resource)
+      resource.headers['X-LighthouseToken'] = token
+    end
   end
+  
+  self.host_format   = '%s://%s%s'
+  self.domain_format = '%s.lighthouseapp.com'
+  self.protocol      = 'http'
+  self.port          = ''
 end

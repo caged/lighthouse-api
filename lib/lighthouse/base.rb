@@ -7,6 +7,8 @@ module Lighthouse
       end
       base.site_format = '%s'
       super
+      Lighthouse.update_site(base)
+      Lighthouse.update_token_header(base)
     end
   end
 end
