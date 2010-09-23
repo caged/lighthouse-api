@@ -1,1 +1,1 @@
-require File.dirname(__FILE__) + "/lighthouse"
+require File.join(File.dirname(__FILE__), "lighthouse")

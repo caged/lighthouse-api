@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.summary = %q{RubyGem wrapper for ActiveResource API to http://lighthouseapp.com}
   s.test_files = []
 
-  s.add_dependency(%q<activesupport>, [">= 2.1.0"])
-  s.add_dependency(%q<activeresource>, [">= 2.1.0"])
+  s.add_dependency(%q<activesupport>, [">= 3.0.0"])
+  s.add_dependency(%q<activeresource>, [">= 3.0.0"])
   
 end

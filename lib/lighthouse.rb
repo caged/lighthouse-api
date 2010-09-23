@@ -1,29 +1,7 @@
+$: << File.dirname(__FILE__) unless $:.include?(File.dirname(__FILE__))
+
 require 'rubygems'
-
-begin
-  require 'uri'
-  require 'addressable/uri'
-
-  module URI
-    def decode(*args)
-      Addressable::URI.decode(*args)
-    end
-
-    def escape(*args)
-      Addressable::URI.escape(*args)
-    end
-
-    def parse(*args)
-      Addressable::URI.parse(*args)
-    end
-  end
-rescue LoadError => e
-  puts "Install the Addressable gem (with dependencies) to support accounts with subdomains."
-  puts "# sudo gem install addressable --development"
-  puts e.message
-end
-
-require 'active_support'
+require 'lighthouse/core_ext/uri'
 require 'active_resource'
 
 # Ruby lib for working with the Lighthouse API's XML interface.  
@@ -48,10 +26,35 @@ require 'active_resource'
 # http://lighthouseapp.com/api.
 #
 module Lighthouse
+  
+  extend ActiveSupport::Autoload
+  
+  autoload :Base
+  autoload :Bin
+  autoload :Changeset
+  autoload :Membership
+  autoload :Message
+  autoload :Milestone
+  autoload :Project
+  autoload :ProjectMembership
+  autoload :Tag
+  autoload :TagResource
+  autoload :Ticket
+  autoload :Token
+  autoload :User
+  
   class Error < StandardError; end
+  
+  class Change < Array; end
+  
+  self.host_format   = '%s://%s%s'
+  self.domain_format = '%s.lighthouseapp.com'
+  self.protocol      = 'http'
+  self.port          = ''
+  
   class << self
-    attr_accessor :email, :password, :host_format, :domain_format, :protocol, :port
-    attr_reader :account, :token
+    attr_accessor :password, :host_format, :domain_format, :protocol, :port
+    attr_reader :account, :token, :email
 
     # Sets the account name, and updates all the resources with the new domain.
     def account=(name)
@@ -63,8 +66,8 @@ module Lighthouse
 
     # Sets up basic authentication credentials for all the resources.
     def authenticate(email, password)
-      @email    = email
-      @password = password
+      self.email    = email
+      self.password = password
     end
 
     # Sets the API token for all the resources.
@@ -74,293 +77,14 @@ module Lighthouse
       end
       @token = value
     end
+    
+    # Sets the account email and user to avoid monkeypatching ActiveResource
+    def email=(value)
+      @email = @user = value
+    end
 
     def resources
       @resources ||= []
     end
-  end
-  
-  self.host_format   = '%s://%s%s'
-  self.domain_format = '%s.lighthouseapp.com'
-  self.protocol      = 'http'
-  self.port          = ''
-
-  class Base < ActiveResource::Base
-    def self.inherited(base)
-      Lighthouse.resources << base
-      class << base
-        attr_accessor :site_format
-      end
-      base.site_format = '%s'
-      super
-    end
-  end
-  
-  # Find projects
-  #
-  #   Lighthouse::Project.find(:all) # find all projects for the current account.
-  #   Lighthouse::Project.find(44)   # find individual project by ID
-  #
-  # Creating a Project
-  #
-  #   project = Lighthouse::Project.new(:name => 'Ninja Whammy Jammy')
-  #   project.save
-  #   # => true
-  #
-  # Creating an OSS project
-  # 
-  #   project = Lighthouse::Project.new(:name => 'OSS Project')
-  #   project.access = 'oss'
-  #   project.license = 'mit'
-  #   project.save
-  # 
-  # OSS License Mappings
-  # 
-  #   'mit' => "MIT License",
-  #   'apache-2-0' => "Apache License 2.0",
-  #   'artistic-gpl-2' => "Artistic License/GPLv2",
-  #   'gpl-2' => "GNU General Public License v2",
-  #   'gpl-3' => "GNU General Public License v3",
-  #   'lgpl' => "GNU Lesser General Public License"
-  #   'mozilla-1-1' => "Mozilla Public License 1.1"
-  #   'new-bsd' => "New BSD License",
-  #   'afl-3' => "Academic Free License v. 3.0"
-  
-  #
-  # Updating a Project
-  #
-  #   project = Lighthouse::Project.find(44)
-  #   project.name = "Lighthouse Issues"
-  #   project.public = false
-  #   project.save
-  #
-  # Finding tickets
-  # 
-  #   project = Lighthouse::Project.find(44)
-  #   project.tickets
-  #
-  class Project < Base
-    def tickets(options = {})
-      Ticket.find(:all, :params => options.update(:project_id => id))
-    end
-  
-    def messages(options = {})
-      Message.find(:all, :params => options.update(:project_id => id))
-    end
-  
-    def milestones(options = {})
-      Milestone.find(:all, :params => options.update(:project_id => id))
-    end
-  
-    def bins(options = {})
-      Bin.find(:all, :params => options.update(:project_id => id))
-    end
-    
-    def changesets(options = {})
-      Changeset.find(:all, :params => options.update(:project_id => id))
-    end
-
-    def memberships(options = {})
-      ProjectMembership.find(:all, :params => options.update(:project_id => id))
-    end
-
-    def tags(options = {})
-      TagResource.find(:all, :params => options.update(:project_id => id))
-    end
-  end
-
-  class User < Base
-    def memberships(options = {})
-      Membership.find(:all, :params => {:user_id => id})
-    end
-  end
-  
-  class Membership < Base
-    site_format << '/users/:user_id'
-    def save
-      raise Error, "Cannot modify memberships from the API"
-    end
-  end
-  
-  class ProjectMembership < Base
-    self.element_name = 'membership'
-    site_format << '/projects/:project_id'
-
-    def url
-      respond_to?(:account) ? account : project
-    end
-
-    def save
-      raise Error, "Cannot modify memberships from the API"
-    end
-  end
-  
-  class Token < Base
-    def save
-      raise Error, "Cannot modify Tokens from the API"
-    end
-  end
-
-  # Find tickets
-  #
-  #  Lighthouse::Ticket.find(:all, :params => { :project_id => 44 })
-  #  Lighthouse::Ticket.find(:all, :params => { :project_id => 44, :q => "state:closed tagged:committed" })
-  #
-  #  project = Lighthouse::Project.find(44)
-  #  project.tickets
-  #  project.tickets(:q => "state:closed tagged:committed")
-  #
-  # Creating a Ticket
-  #
-  #  ticket = Lighthouse::Ticket.new(:project_id => 44)
-  #  ticket.title = 'asdf'
-  #  ...
-  #  ticket.tags << 'ruby' << 'rails' << '@high'
-  #  ticket.save
-  #
-  # Updating a Ticket
-  #
-  #  ticket = Lighthouse::Ticket.find(20, :params => { :project_id => 44 })
-  #  ticket.state = 'resolved'
-  #  ticket.tags.delete '@high'
-  #  ticket.save
-  #
-  class Ticket < Base
-    attr_writer :tags
-    site_format << '/projects/:project_id'
-
-    def id
-      attributes['number'] ||= nil
-      number
-    end
-
-    def tags
-      attributes['tag'] ||= nil
-      @tags ||= tag.blank? ? [] : parse_with_spaces(tag)
-    end
-
-    def body
-      attributes['body'] ||= ''
-    end
-
-    def body=(value)
-      attributes['body'] = value
-    end
-
-    def body_html
-      attributes['body_html'] ||= ''
-    end
-
-    def body_html=(value)
-      attributes['body_html'] = value
-    end
-
-    def save_with_tags
-      self.tag = @tags.collect do |tag|
-        tag.include?(' ') ? tag.inspect : tag
-      end.join(" ") if @tags.is_a?(Array)
-      @tags = nil ; save_without_tags
-    end
-    
-    alias_method_chain :save, :tags
-
-    private
-      # taken from Lighthouse Tag code
-      def parse_with_spaces(list)
-        tags = []
-
-        # first, pull out the quoted tags
-        list.gsub!(/\"(.*?)\"\s*/ ) { tags << $1; "" }
-        
-        # then, get whatever's left
-        tags.concat list.split(/\s/)
-
-        cleanup_tags(tags)
-      end
-    
-      def cleanup_tags(tags)
-        returning tags do |tag|
-          tag.collect! do |t|
-            unless tag.blank?
-              t = Tag.new(t,prefix_options[:project_id])
-              t.downcase!
-              t.gsub! /(^')|('$)/, ''
-              t.gsub! /[^a-z0-9 \-_@\!']/, ''
-              t.strip!
-              t.prefix_options = prefix_options
-              t
-            end
-          end
-          tag.compact!
-          tag.uniq!
-        end
-      end
-  end
-  
-  class Message < Base
-    site_format << '/projects/:project_id'
-  end
-  
-  class Milestone < Base
-    site_format << '/projects/:project_id'
-
-    def tickets(options = {})
-      Ticket.find(:all, :params => options.merge(prefix_options).update(:q => %{milestone:"#{title}"}))
-    end
-  end
-  
-  class Bin < Base
-    site_format << '/projects/:project_id'
-
-    def tickets(options = {})
-      Ticket.find(:all, :params => options.merge(prefix_options).update(:q => query))
-    end
-  end
-  
-  class Changeset < Base
-    site_format << '/projects/:project_id'
-  end
-  
-  class Change < Array; end
-
-  class TagResource < Base
-    self.element_name = 'tag'
-    site_format << '/projects/:project_id'
-
-    def name
-      @name ||= Tag.new(attributes['name'], prefix_options[:project_id])
-    end
-
-    def tickets(options = {})
-      name.tickets(options)
-    end
-  end
-  
-  class Tag < String
-    attr_writer :prefix_options
-    attr_accessor :project_id
-
-    def initialize(s, project_id)
-      @project_id = project_id
-      super(s)
-    end
-
-    def prefix_options
-      @prefix_options || {}
-    end
-
-    def tickets(options = {})
-      options[:project_id] ||= @project_id
-      Ticket.find(:all, :params => options.merge(prefix_options).update(:q => %{tagged:"#{self}"}))
-    end
-  end
-end
-
-module ActiveResource
-  class Connection
-    private
-      def authorization_header
-        (Lighthouse.email || Lighthouse.password ? { 'Authorization' => 'Basic ' + ["#{Lighthouse.email}:#{Lighthouse.password}"].pack('m').delete("\r\n") } : {})
-      end
   end
 end
