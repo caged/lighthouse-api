@@ -49,16 +49,8 @@ module Lighthouse
   class Change < Array; end
   
   class << self
-    attr_accessor :email, :password, :host_format, :domain_format, :protocol, :port
-    attr_reader :account, :token
-
-    # Sets the account name, and updates all the resources with the new domain.
-    def account=(name)
-      @account = name
-      resources.each do |klass|
-        update_site(klass)
-      end
-    end
+    attr_accessor :account, :email, :password, :host_format, :domain_format, :protocol, :port
+    attr_reader :token
 
     # Sets up basic authentication credentials for all the resources.
     def authenticate(email, password)
