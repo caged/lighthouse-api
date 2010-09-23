@@ -1,4 +1,4 @@
-require 'lighthouse'
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lighthouse'))
 puts <<-TXT
 Ruby lib for working with the Lighthouse API's XML interface.  
 The first thing you need to set is the account name.  This is the same
