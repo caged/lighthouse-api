@@ -5,6 +5,9 @@ require 'lighthouse/core_ext/uri'
 require 'active_support'
 require 'active_resource'
 
+# required for ruby < 1.9. constants(false) emaulation in active_support is buggy.
+require 'lighthouse/base'
+
 # Ruby lib for working with the Lighthouse API's XML interface.  
 # The first thing you need to set is the account name.  This is the same
 # as the web address for your account.
@@ -30,7 +33,6 @@ module Lighthouse
   
   extend ActiveSupport::Autoload
   
-  autoload :Base
   autoload :Bin
   autoload :Changeset
   autoload :Membership
