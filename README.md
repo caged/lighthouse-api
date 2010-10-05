@@ -29,3 +29,17 @@ From /lib:
     #Lighthouse.token = 'YOUR_TOKEN'
     
     Project.find(:all)
+    
+### Contributions
+ * technoweenie (rick)
+ * caged (Justin Palmer)
+ * granth (Grant Hollingworth)
+ * kneath (Kyle Neath)
+ * djanowski (Damian Janowski)
+ * drnic (Dr Nic Williams)
+ * texel (Leigh Caplan)
+ * trptcolin (Colin Jones)
+ * cyberfox (Morgan Schweers)
+ * krekoten (Крекотень Мар'ян)
+
+
