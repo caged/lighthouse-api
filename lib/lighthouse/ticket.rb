@@ -81,7 +81,7 @@ module Lighthouse
       end
     
       def cleanup_tags(tags)
-        returning tags do |tag|
+        tags.tap do |tag|
           tag.collect! do |t|
             unless tag.blank?
               t = Tag.new(t,prefix_options[:project_id])
