@@ -35,6 +35,7 @@ module Lighthouse
   
   autoload :Bin
   autoload :Changeset
+  autoload :Member
   autoload :Membership
   autoload :Message
   autoload :Milestone
